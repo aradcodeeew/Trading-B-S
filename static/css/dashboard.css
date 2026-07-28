@@ -1,0 +1,235 @@
+body {
+  font-family: Arial, sans-serif;
+  background: url('/static/images/welcome.jpg') no-repeat center center fixed;
+  background-size: cover;
+  color: #fff;
+  margin: 0;
+  padding: 0;
+}
+
+/* کانتینر عمومی */
+.container {
+  padding: 60px 20px;
+  text-align: center;
+  max-width: 800px;
+  margin: auto;
+}
+
+h1 {
+  font-size: 2rem;
+  margin-bottom: 30px;
+  color: #00ffc8;
+  text-shadow: 0 0 5px rgba(0,255,200,0.5);
+}
+
+/* جعبه شیشه‌ای */
+.black-box,
+.card,
+.glass-box {
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 30px 25px;
+  border-radius: 15px;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.5);
+  margin-bottom: 30px;
+  text-align: left;
+}
+
+/* بخش عنوان کارت */
+.card h2,
+.glass-box h2 {
+  color: #00ffc8;
+  font-size: 1.4rem;
+  margin-bottom: 20px;
+  border-bottom: 1px solid rgba(0,255,200,0.3);
+  padding-bottom: 6px;
+}
+
+/* ورودی‌ها و کشویی‌ها */
+.input-group,
+.form-group {
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.input-group label,
+.form-group label {
+  display: block;
+  margin-bottom: 6px;
+  color: #ccc;
+  font-weight: bold;
+}
+
+.input-group input,
+.form-group input[type="text"],
+.input-group select,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 10px 12px;
+  background: rgba(0, 0, 0, 0.6);
+  color: #00ffc8;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 6px;
+  backdrop-filter: blur(6px);
+  font-size: 1rem;
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.form-group select:focus {
+  outline: none;
+  box-shadow: 0 0 6px #00ffc8;
+}
+
+.form-group option {
+  background: rgba(20,20,20,0.95);
+  color: white;
+  padding: 8px;
+}
+
+/* دکمه اصلی */
+.btn,
+.btn-calculate,
+.btn-blue,
+.btn-green,
+.btn-primary,
+.btn-secondary {
+  display: inline-block;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.1s ease;
+  color: white;
+}
+
+.btn-primary {
+  background: linear-gradient(90deg, #00e5ff, #007bff);
+}
+.btn-primary:hover {
+  background: linear-gradient(90deg, #007bff, #00e5ff);
+  transform: translateY(-2px);
+}
+
+.btn-secondary {
+  background: linear-gradient(90deg, #ff6b6b, #ff4757);
+}
+.btn-secondary:hover {
+  background: linear-gradient(90deg, #ff4757, #ff6b6b);
+  transform: translateY(-2px);
+}
+
+.btn-calculate {
+  width: 100%;
+  background-color: #28a745;
+  font-size: 1.1rem;
+  border-radius: 10px;
+}
+.btn-calculate:hover {
+  background-color: #218838;
+}
+
+/* پیغام هشدار */
+.alert {
+  margin-top: 20px;
+  padding: 12px;
+  background: rgba(255, 0, 0, 0.2);
+  color: #ff4d4d;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+/* نمایش ریسک */
+.risk-value {
+  font-size: 1.4rem;
+  color: #00ffc8;
+  text-shadow: 0 0 5px #00ffc8;
+  font-weight: bold;
+}
+
+/* همبرگر */
+.hamburger {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 999;
+  width: 35px;
+  height: 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+}
+
+.hamburger .bar {
+  width: 100%;
+  height: 4px;
+  background-color: white;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+.hamburger:hover .bar {
+  background-color: #00ffc8;
+  box-shadow: 0 0 5px #00ffc8, 0 0 10px #00ffc8;
+}
+
+/* سایدبار */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: -250px;
+  width: 220px;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: left 0.4s ease;
+  z-index: 998;
+  padding: 60px 20px;
+  box-shadow: 2px 0 15px rgba(0, 255, 200, 0.1);
+}
+
+.sidebar.active {
+  left: 0;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar ul li {
+  margin: 20px 0;
+}
+
+.sidebar ul li a {
+  color: #00ffc8;
+  text-decoration: none;
+  font-size: 1.1rem;
+  font-weight: bold;
+  padding: 10px 20px;
+  display: block;
+  border-radius: 8px;
+  transition: background 0.3s ease;
+}
+
+.sidebar ul li a:hover {
+  background-color: rgba(0, 255, 200, 0.1);
+  color: white;
+}
+
+/* پس‌زمینه خاص برای strategies.html */
+body.strategies-page {
+  background-image: url('/static/images/bg_strategies.jpg');
+  background-size: cover;
+  background-attachment: fixed;
+  background-position: center;
+}

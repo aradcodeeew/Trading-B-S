@@ -1,0 +1,34 @@
+<!-- welcome.html -->
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/welcome.css') }}" />
+</head>
+<body>
+  <div class="container">
+    <h1>Trading Room ARAD</h1>
+    <div class="black-box">
+      <form method="POST">
+        <div class="input-group">
+          <label for="username">Username:</label>
+          <input type="text" id="username" name="username" required />
+        </div>
+
+        <div class="input-group">
+          <label for="password">Password:</label>
+          <input type="password" id="password" name="password" required />
+        </div>
+
+        <button type="submit" class="btn-calculate">Login</button>
+      </form>
+
+      {% if error %}
+      <div class="alert">{{ error }}</div>
+      {% endif %}
+    </div>
+  </div>
+</body>
+</html>

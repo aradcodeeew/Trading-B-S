@@ -1,0 +1,115 @@
+<!-- history.html -->
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8">
+  <title>تاریخچه تریدها</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+  <style>
+    .history-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 1rem;
+    }
+
+    .history-table thead {
+      background-color: rgba(0, 255, 200, 0.1);
+    }
+
+    .history-table thead th {
+      color: white;
+    }
+
+    .history-table tbody {
+      color: #00ffc8;
+    }
+
+    .history-table th, .history-table td {
+      padding: 12px 15px;
+      text-align: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .history-table tbody tr:hover {
+      background-color: rgba(0, 255, 200, 0.05);
+    }
+
+    .history-table td:first-child {
+      direction: ltr;
+      font-family: monospace;
+      font-size: 0.95rem;
+    }
+
+    .result-win {
+      color: #28d428;
+      font-weight: bold;
+    }
+
+    .result-loss {
+      color: #ff4d4d;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="hamburger" onclick="toggleSidebar()">
+    <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+  </div>
+
+  <div class="sidebar" id="sidebar">
+    <ul>
+      <li><a href="/capital">capital risk</a></li>
+      <li><a href="/risk"> risk manage </a></li>
+      <li><a href="/emotion">emotional manage</a></li>
+      <li><a href="/dashboard">dashboard</a></li>
+      <li><a href="{{ url_for('learn') }}"> Learn</a></li>
+      <li><a href="/strategies">startegy</a></li>
+      <li><a href="/history">history</a></li>
+      <li><a href="/export-backup"> Export / Backup</a></li>
+      <li><a href="/logout">Exite</a></li>
+    </ul>
+  </div>
+
+  <div class="container">
+    <h1>تاریخچه تریدها</h1>
+    <div class="black-box">
+      <form method="post" action="/clear-history" onsubmit="return confirm('Are you sure you want to clear all history?');" style="margin-bottom: 15px;">
+        <button type="submit" class="btn-blue" style="background-color: #dc3545;">🧹 Clear All History</button>
+      </form>  
+      {% if history %}
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th>تاریخ و زمان</th>
+              <th>نتیجه</th>
+              <th>ریسک (%)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for h in history %}
+              <tr>
+                <td>{{ h.timestamp }}</td>
+                <td class="{% if h.result == 'win' %}result-win{% else %}result-loss{% endif %}">
+                  {{ 'برد' if h.result == 'win' else 'باخت' }}
+                </td>
+                <td>{{ h.risk }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p>هیچ داده‌ای ثبت نشده است.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <script>
+    function toggleSidebar() {
+      document.getElementById("sidebar").classList.toggle("active");
+    }
+  </script>
+
+</body>
+</html>

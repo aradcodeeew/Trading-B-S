@@ -1,0 +1,347 @@
+
+<!--strategies.html -->
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8" />
+  <title>استراتژی‌ها</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+  <style>
+    .container {
+      max-width: 500px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 2rem;
+      color: #00ffc8;
+      text-shadow: 0 0 5px rgba(0,255,200,0.5);
+    }
+    .card {
+      width: 100%;
+      max-width: 500px;
+      margin: 0 auto 30px;
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+      padding: 20px 25px;
+    }
+    .card h2 {
+      margin-bottom: 20px;
+      font-size: 1.4rem;
+      color: #00ffc8;
+      border-bottom: 1px solid rgba(0,255,200,0.3);
+      padding-bottom: 8px;
+    }
+    .form-group {
+      margin-bottom: 15px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 6px;
+      color: #ddd;
+      font-weight: bold;
+    }
+    .form-group input[type="text"],
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      max-width: 100%;
+      margin: 0;
+      padding: 10px 12px;
+      box-sizing: border-box;
+      border: none;
+      border-radius: 6px;
+      background: rgba(0, 0, 0, 0.6);
+      color: #00ffc8;
+      font-size: 1rem;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .form-group textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+    .form-group select:focus {
+      outline: none;
+      box-shadow: 0 0 5px #00ffc8;
+    }
+    .form-group option {
+      background: rgba(15,15,15,0.95);
+      color: #ffffff;
+      padding: 8px;
+    }
+    .btn {
+      display: inline-block;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      color: #fff;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.1s;
+    }
+    .btn-primary {
+      background: linear-gradient(90deg, #00e5ff, #007bff);
+    }
+    .btn-primary:hover {
+      background: linear-gradient(90deg, #007bff, #00e5ff);
+      transform: translateY(-2px);
+    }
+    .btn-secondary {
+      background: linear-gradient(90deg, #ff6b6b, #ff4757);
+    }
+    .btn-secondary:hover {
+      background: linear-gradient(90deg, #ff4757, #ff6b6b);
+      transform: translateY(-2px);
+    }
+    #test-conditions .form-group {
+      margin-bottom: 12px;
+    }
+    #searchResult {
+      margin-top: 15px;
+      padding: 12px;
+      background: rgba(0,255,200,0.1);
+      border-radius: 6px;
+      color: #fff;
+    }
+  </style>
+</head>
+<body class="strategies-page">
+  <div class="hamburger" onclick="toggleSidebar()">
+    <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+  </div>
+
+  <div class="sidebar" id="sidebar">
+    <ul>
+      <li><a href="/capital">capital risk</a></li>
+      <li><a href="/risk"> risk manage </a></li>
+      <li><a href="/emotion">emotional manage</a></li>
+      <li><a href="/dashboard">dashboard</a></li>
+      <li><a href="{{ url_for('learn') }}"> Learn</a></li>
+      <li><a href="/strategies">startegy</a></li>
+      <li><a href="/history">history</a></li>
+      <li><a href="/export-backup"> Export / Backup</a></li>
+      <li><a href="/logout">Exite</a></li>
+    </ul>
+  </div>
+
+  <div class="container">
+    <h1>🧠 مدیریت استراتژی‌ها</h1>
+    <!-- تست استراتژی -->
+    <div class="card">
+      <h2>find strategy</h2>
+      <form method="POST" action="/strategies/test">
+        <div class="form-group">
+          <label for="cycleSelector">cycle market :</label>
+          <select id="cycleSelector" name="cycle" required>
+            <option value="">-- choose --</option>
+            <option value="spike">spike</option>
+            <option value="channel">channel</option>
+            <option value="range">range</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="testDirection">Market direction :</label>
+          <select id="testDirection" name="direction" required>
+            <option value="">choose direction</option>
+            <option value="buy"> up </option>
+            <option value="sell">down  </option>
+          </select>
+        </div>
+
+        <div id="test-conditions"></div>
+
+        <button type="submit" class="btn btn-primary"> check trade </button>
+      </form>
+
+      {% if test_result %}
+        <div id="searchResult">
+          🔷 result: <strong>{{ test_result }}</strong>
+        </div>
+      {% endif %}
+    </div>
+    <!-- ساخت استراتژی -->
+    <div class="card">
+      <h2>➕ add new startegy</h2>
+      <form method="POST" action="/strategies/add">
+        <div class="form-group">
+          <label for="strategyName">name :</label>
+          <input id="strategyName" type="text" name="name" placeholder="مثال: سه کندل پیاپی" required>
+        </div>
+
+        <div class="form-group">
+          <label for="buildCycle">cycle market :</label>
+          <select id="buildCycle" name="cycle_type" required>
+            <option value="">-- choose --</option>
+            <option value="spike">spike</option>
+            <option value="channel">channel</option>
+            <option value="range">range</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="direction">Market direction</label>
+          <select id="direction" name="direction" required>
+            <option value="">Market direction</option>
+            <option value="buy">up</option>
+            <option value="sell"> down</option>
+          </select>
+        </div>
+
+        <div id="condition-builder"></div>
+        <button type="button" class="btn btn-secondary" onclick="addCondition()">➕ Add condition </button>
+
+        <div class="form-group" style="margin-top:20px;">
+          <label for="strategyResult">Strategy result:</label>
+          <textarea id="strategyResult" name="result" placeholder="مثال: الان وقت خرید است" required></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">save</button>
+      </form>
+    </div>
+    <!-- مدیریت استراتژی‌های ذخیره‌شده -->
+    <div class="card">
+      <h2>strategies history</h2>
+      <div class="form-group">
+        <label>total : {{ strategies | length }}</label>
+      </div>
+
+      {% if strategies %}
+        {% for s in strategies %}
+          <div class="form-group" style="margin-bottom: 12px; padding: 10px; background-color: rgba(255,255,255,0.05); border-radius: 6px;">
+            <strong>{{ s.name }}</strong> — {{ s.cycle_type }}
+            <form method="POST" action="/strategies/delete/{{ loop.index0 }}" style="display: inline;">
+              <button type="submit" class="btn btn-secondary" style="margin-left: 12px;">🗑️</button>
+            </form>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="form-group">فعلاً هیچ استراتژی ذخیره نشده.</div>
+      {% endif %}
+    </div>
+  <script>
+    // فعال یا غیرفعال‌کردن منوی همبرگری
+    function toggleSidebar() {
+      document.getElementById("sidebar").classList.toggle("active");
+    }
+
+    // افزودن شرط جدید در فرم ساخت استراتژی
+    function addCondition() {
+      const container = document.getElementById("condition-builder");
+      const conditionNumber = container.childElementCount + 1;
+
+      const box = document.createElement("div");
+      box.className = "form-group";
+      box.innerHTML = `
+        <label>شرط ${conditionNumber}:</label>
+        <input type="text" name="condition_values" placeholder="مثلاً کندل نزولی - شکست سطح" required>
+      `;
+      container.appendChild(box);
+    }
+
+      // لیست همهٔ استراتژی‌ها از سرور
+  const allStrategies = {{ strategies | tojson }};
+  let filteredStrategies = [];
+
+  // وقتی بازار یا جهت تغییر کرد تست رو شروع کن
+  function startConditionTest() {
+    const cycle = document.getElementById("cycleSelector").value;
+    const direction = document.getElementById("testDirection").value;
+    const testDiv = document.getElementById("test-conditions");
+    testDiv.innerHTML = "";
+
+    if (!cycle || !direction) return;
+
+    filteredStrategies = allStrategies.filter(
+      s => s.cycle_type === cycle && s.direction === direction
+    );
+
+    // ساخت اولین کشویی شرط
+    createConditionDropdown(0);
+  }
+
+  // ایجاد کشویی شرط سطح `level`
+  function createConditionDropdown(level) {
+    const testDiv = document.getElementById("test-conditions");
+
+    // مسیر انتخاب‌شده تا سطوح قبلی
+    const selectedPath = [];
+    for (let i = 0; i < level; i++) {
+      const sel = document.querySelector(`select[name="condition_${i+1}"]`);
+      if (sel) selectedPath.push(sel.value);
+    }
+
+    // فیلتر استراتژی‌هایی که تا این سطح با مسیر ما مطابقت دارن
+    const candidates = filteredStrategies.filter(s => {
+      if (s.conditions.length <= level) return false;
+      for (let i = 0; i < level; i++) {
+        if (s.conditions[i] !== selectedPath[i]) return false;
+      }
+      return true;
+    });
+    if (!candidates.length) return;
+
+    // ساخت لیبل و سلکت جدید
+    const label = document.createElement("label");
+    label.textContent = `condition ${level + 1}:`;
+
+    const select = document.createElement("select");
+    select.name = `condition_${level + 1}`;
+    select.className = "form-group-select";
+    select.required = true;
+
+    const defaultOpt = document.createElement("option");
+    defaultOpt.value = "";
+    defaultOpt.textContent = "-- choose condition--";
+    defaultOpt.selected = true;
+    select.appendChild(defaultOpt);
+
+
+    // جمع یکتا از مقادیر مرحله بعد
+    const seen = new Set();
+    candidates.forEach(s => {
+      const val = s.conditions[level];
+      if (val && !seen.has(val)) {
+        const opt = document.createElement("option");
+        opt.value = val;
+        opt.textContent = val;
+        select.appendChild(opt);
+        seen.add(val);
+      }
+    });
+
+    // بسته به اینکه گزینه‌ای هست یا نه
+    if (!select.options.length) return;
+
+    // افزودن به DOM
+    const group = document.createElement("div");
+    group.className = "form-group";
+    group.appendChild(label);
+    group.appendChild(select);
+    testDiv.appendChild(group);
+
+    // به محض تغییر، شرط‌های بعدی رو پاک کن و سطح بعدی رو بساز
+    select.addEventListener("change", () => {
+      while (testDiv.children.length > level + 1) {
+        testDiv.removeChild(testDiv.lastChild);
+      }
+      createConditionDropdown(level + 1);
+    });
+  }
+
+  // وصل کردن به سلکت‌های بازار و جهت
+  document.getElementById("cycleSelector").addEventListener("change", startConditionTest);
+  document.getElementById("testDirection").addEventListener("change", startConditionTest);
+</script>
+</body>
+</html>

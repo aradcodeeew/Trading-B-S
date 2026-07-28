@@ -1,0 +1,224 @@
+<!-- learn.html -->
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8">
+  <title>آموزش</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+  <style>
+    .learn-post {
+      background-color: rgba(255,255,255,0.05);
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 20px;
+    }
+    .learn-post img {
+      max-width: 100%;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.2);
+      margin-bottom: 8px;
+    }
+    .add-form {
+      display: none;
+      margin-top: 15px;
+    }
+    .form-btns {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 8px;
+    }
+    .gallery-label {
+      display: inline-block;
+      padding: 6px 12px;
+      background-color: #007bff;
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    #img-preview {
+      margin-top: 10px;
+      max-width: 100%;
+      border-radius: 8px;
+      display: none;
+    }
+    .delete-btn {
+      background: none;
+      border: none;
+      color: #dc3545;
+      font-size: 16px;
+      cursor: pointer;
+      float: left;
+    }
+    .top-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+    .add-btn {
+      background-color: #28a745;
+      border: none;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .add-btn:hover {
+      background-color: #218838;
+    }
+    .sort-dropdown {
+      position: relative;
+    }
+    .sort-btn {
+      background-color: #007bff;
+      border: none;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .sort-options {
+      display: none;
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background-color: white;
+      color: black;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      overflow: hidden;
+      z-index: 10;
+    }
+    .sort-options a {
+      display: block;
+      padding: 10px 15px;
+      text-decoration: none;
+      color: black;
+    }
+    .sort-options a:hover {
+      background-color: #f1f1f1;
+    }
+  </style>
+</head>
+<body>
+  <div class="hamburger" onclick="toggleSidebar()">
+    <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+  </div>
+
+  <div class="sidebar" id="sidebar">
+    <ul>
+      <li><a href="/capital">capital risk</a></li>
+      <li><a href="/risk"> risk manage </a></li>
+      <li><a href="/emotion">emotional manage</a></li>
+      <li><a href="/dashboard">dashboard</a></li>
+      <li><a href="{{ url_for('learn') }}"> Learn</a></li>
+      <li><a href="/strategies">startegy</a></li>
+      <li><a href="/history">history</a></li>
+      <li><a href="/export-backup"> Export / Backup</a></li>
+      <li><a href="/logout">Exite</a></li>
+    </ul>
+  </div>
+
+  <div class="container">
+    <div class="top-controls">
+      <button onclick="toggleForm()" class="add-btn">➕ new post </button>
+
+      <div class="sort-dropdown">
+        <button class="sort-btn" onclick="toggleSortMenu()">🔽 sorting</button>
+        <div class="sort-options" id="sortOptions">
+          <a href="?sort=newest">newest ↑</a>
+          <a href="?sort=oldest">oldest ↓</a>
+        </div>
+      </div>
+    </div>
+
+    <form method="POST" action="/learn/add" enctype="multipart/form-data" class="add-form" id="learn-form">
+      <label class="gallery-label">
+        🖼️ choose photo
+        <input type="file" name="image" accept="image/*" onchange="previewImage(event)" style="display:none;" required>
+      </label>
+      <img id="img-preview" />
+      <textarea name="note" rows="3" placeholder="توضیح برای این آموزش..." style="width: 100%; margin-top: 8px;"></textarea>
+      <div class="form-btns">
+        <button type="submit" class="save-btn">✔️</button>
+        <button type="button" onclick="cancelPost()" class="cancel-btn">❌</button>
+      </div>
+    </form>
+
+    {% for post in posts %}
+      <div class="glass-box learn-post">
+        <form method="POST" action="{{ url_for('delete_learn_post', index=loop.index0) }}">
+          <button class="delete-btn" title="حذف پست">🗑️</button>
+        </form>
+        <img src="{{ url_for('learn_image', filename=post.image) }}">
+        {% if post.text %}
+          <p>{{ post.text }}</p>
+        {% endif %}
+        <small style="opacity: 0.6;">📅 {{ post.timestamp.split("T")[0] }}</small>
+      </div>
+    {% else %}
+      <p style="opacity: 0.6;">lets take some advice...</p>
+    {% endfor %}
+  </div>
+
+  <script>
+    function toggleSidebar() {
+      document.getElementById("sidebar").classList.toggle("active");
+    }
+
+    function toggleForm() {
+      document.getElementById("learn-form").style.display = "block";
+      document.querySelector(".add-btn").style.display = "none";
+    }
+
+    function cancelPost() {
+      document.getElementById("learn-form").reset();
+      document.getElementById("learn-form").style.display = "none";
+      document.getElementById("img-preview").style.display = "none";
+      document.querySelector(".add-btn").style.display = "inline-block";
+    }
+
+    function previewImage(event) {
+      const reader = new FileReader();
+      reader.onload = function(){
+        const output = document.getElementById('img-preview');
+        output.src = reader.result;
+        output.style.display = 'block';
+      };
+      reader.readAsDataURL(event.target.files[0]);
+    }
+
+    function toggleSortMenu() {
+      const menu = document.getElementById("sortOptions");
+      menu.style.display = menu.style.display === "block" ? "none" : "block";
+    }
+    document.getElementById("learn-form").addEventListener("paste", function (event) {
+  const items = event.clipboardData.items;
+  for (let i = 0; i < items.length; i++) {
+    if (items[i].type.indexOf("image") !== -1) {
+      const blob = items[i].getAsFile();
+      const inputFile = document.querySelector('input[type="file"]');
+
+      const dataTransfer = new DataTransfer();
+      dataTransfer.items.add(blob);
+      inputFile.files = dataTransfer.files;
+
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const output = document.getElementById("img-preview");
+        output.src = e.target.result;
+        output.style.display = "block";
+      };
+      reader.readAsDataURL(blob);
+    }
+  }
+});
+  </script>
+</body>
+</html>

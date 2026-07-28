@@ -1,0 +1,1 @@
+pyinstaller app.py --onefile --noconsole --icon="arad_icon.ico" --add-data "templates;templates" --add-data "static;static" --add-data "TradingAppData;TradingAppData"

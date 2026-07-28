@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8">
+  <title>Export / Backup</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+  <style>
+    .glass-panel {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      padding: 20px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    .btn-blue, .btn-green {
+      padding: 10px 18px;
+      border: none;
+      border-radius: 6px;
+      font-size: 15px;
+      cursor: pointer;
+      color: white;
+      margin-top: 10px;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .btn-blue { background-color: #007bff; }
+    .btn-green { background-color: #28a745; }
+    input[type="file"] {
+      margin-top: 12px;
+    }
+    h2 { margin-bottom: 12px; }
+    p { opacity: 0.85; margin-bottom: 10px; }
+    form button { margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <div class="hamburger" onclick="toggleSidebar()">
+    <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+  </div>
+
+  <div class="sidebar" id="sidebar">
+    <ul>
+      <li><a href="/capital">capital risk</a></li>
+      <li><a href="/risk">risk manage</a></li>
+      <li><a href="/emotion">emotional manage</a></li>
+      <li><a href="/dashboard">dashboard</a></li>
+      <li><a href="{{ url_for('learn') }}">Learn</a></li>
+      <li><a href="/strategies">strategy</a></li>
+      <li><a href="/history">history</a></li>
+      <li><a href="/export-backup" class="active">Export / Backup</a></li>
+      <li><a href="/logout">Exit</a></li>
+    </ul>
+  </div>
+
+  <div class="container">
+    <h1>📦 Export / Restore</h1>
+
+    <div class="glass-panel">
+      <h2>🔰 Backup All</h2>
+      <p>همه فایل‌ها: یادداشت‌ها، استراتژی‌ها، آموزش‌ها و تصاویر داخل یک فایل زیپ ذخیره می‌شن</p>
+      <a href="/export-zip" class="btn-green">⬇️ دریافت فایل بکآپبخش کامل</a>
+    </div>
+
+    <div class="glass-panel">
+      <h2>🔁 Restore Backup</h2>
+      <p>فایل زیپ رو وارد کن تا کل اطلاعات اپلیکیشن برگرده سرجاش</p>
+      <form action="/restore-notes" method="post" enctype="multipart/form-data">
+        <label for="backup_zip" class="btn-blue" style="cursor: pointer;">📁 انتخاب فایل</label>
+        <input type="file" name="backup_zip" id="backup_zip" accept=".zip" required style="display: none;" onchange="showFilename()">
+        <span id="selected-filename" style="margin-right: 10px; opacity: 0.8;">هیچ فایلی انتخاب نشده</span>
+        <br>
+        <button type="submit" class="btn-blue" style="margin-top: 12px;">♻️ بازیابی کامل</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    function toggleSidebar() {
+      document.getElementById("sidebar").classList.toggle("active");
+    }
+    function showFilename() {
+      const input = document.getElementById('backup_zip');
+      const label = document.getElementById('selected-filename');
+      label.textContent = input.files.length > 0 ? "📎 " + input.files[0].name : "هیچ فایلی انتخاب نشده";
+    }
+  </script>
+</body>
+</html>

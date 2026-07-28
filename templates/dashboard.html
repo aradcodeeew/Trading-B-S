@@ -1,0 +1,84 @@
+<!-- dahsboard.html -->
+
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>داشبورد</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+</head>
+<body>
+
+  <!-- همبرگر -->
+  <div class="hamburger" onclick="toggleSidebar()">
+    <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+  </div>
+
+  <!-- منو -->
+  <div class="sidebar" id="sidebar">
+    <ul>
+      <li><a href="/capital">capital risk</a></li>
+      <li><a href="/risk"> risk manage </a></li>
+      <li><a href="/emotion">emotional manage</a></li>
+      <li><a href="/dashboard">dashboard</a></li>
+      <li><a href="{{ url_for('learn') }}"> Learn</a></li>
+      <li><a href="/strategies">startegy</a></li>
+      <li><a href="/history">history</a></li>
+      <li><a href="/export-backup"> Export / Backup</a></li>
+      <li><a href="/logout">Exite</a></li>
+    </ul>
+  </div>
+
+  <!-- فرم ریسک -->
+  <div class="container">
+    <h1>Money Manager</h1>
+    <div class="black-box">
+      <form method="POST">
+        <div class="input-group">
+          <label for="risk_start">Risk Start:</label>
+          <select id="risk_start" name="risk_start">
+            <option value="0.5" {% if request.form.get('risk_start') == '0.5' %}selected{% endif %}>0.5%</option>
+            <option value="0.75" {% if request.form.get('risk_start') == '0.75' %}selected{% endif %}>0.75%</option>
+          </select>
+        </div>
+
+        <div class="input-group">
+          <label for="cycle">Cycle Number:</label>
+          <input type="number" id="cycle" name="cycle" min="1" required value="{{ cycle_value or '' }}">
+        </div>
+
+        <div class="input-group">
+          <label for="result">Result:</label>
+          <select id="result" name="result">
+            <option value="win">Win</option>
+            <option value="loss">Loss</option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn-calculate">calculate risk</button>
+      </form>
+
+      {% if risk is not none %}
+      <div class="result-box">
+        <h2>risk of balance</h2>
+        <p class="risk-value">{{ "%.2f"|format(risk) }}%</p>
+      </div>
+      {% endif %}
+
+      {% if message %}
+      <div class="alert">{{ message }}</div>
+      {% endif %}
+    </div>
+
+  </div>
+
+  <!-- اسکریپت فعال‌سازی منو -->
+  <script>
+    function toggleSidebar() {
+      document.getElementById("sidebar").classList.toggle("active");
+    }
+  </script>
+
+</body>
+</html>
