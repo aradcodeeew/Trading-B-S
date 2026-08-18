@@ -1,0 +1,86 @@
+<!-- journal_fields.html -->
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8">
+  <meta name="format-detection" content="telephone=no, address=no, email=no">
+  <title>Manage Boxes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/journal.css') }}">
+</head>
+<body class="journal-page">
+
+  {% include "_sidebar.html" %}
+
+  <div class="container">
+    <h1>Manage Journal Boxes</h1>
+    <p><a href="/journal" class="j-link">&larr; Back to accounts</a></p>
+
+    <form class="glass-box j-field-edit" method="post" action="/journal/fields/add">
+      <h3>Add New Box</h3>
+      <div class="j-field-row">
+        <div>
+          <label>Box name</label>
+          <input type="text" name="label" placeholder="e.g. back context" required>
+        </div>
+        <div>
+          <label>Type</label>
+          <select name="type" onchange="toggleOptions(this)">
+            <option value="text">Free text</option>
+            <option value="select">Select (dropdown)</option>
+          </select>
+        </div>
+      </div>
+      <div class="j-options-wrap" style="display:none;">
+        <label>Options (one per line)</label>
+        <textarea name="options" rows="4" placeholder="spike up&#10;spike down&#10;Range"></textarea>
+      </div>
+      <button type="submit" class="j-btn-add">Add Box</button>
+    </form>
+
+    <hr class="j-divider">
+
+    {% if fields %}
+      {% for f in fields %}
+        <form class="glass-box j-field-edit" method="post" action="/journal/fields/edit/{{ f.id }}">
+          <div class="j-field-row">
+            <div>
+              <label>Box name</label>
+              <input type="text" name="label" value="{{ f.label }}" required>
+            </div>
+            <div>
+              <label>Type</label>
+              <select name="type" onchange="toggleOptions(this)">
+                <option value="text" {% if f.type == 'text' %}selected{% endif %}>Free text</option>
+                <option value="select" {% if f.type == 'select' %}selected{% endif %}>Select (dropdown)</option>
+              </select>
+            </div>
+          </div>
+          <div class="j-options-wrap" style="{% if f.type != 'select' %}display:none;{% endif %}">
+            <label>Options (one per line)</label>
+            <textarea name="options" rows="4">{{ f.options|join('\n') }}</textarea>
+          </div>
+          <div class="j-field-actions">
+            <button type="submit" class="j-btn-save">Save Changes</button>
+          </div>
+        </form>
+        <form method="post" action="/journal/fields/delete/{{ f.id }}"
+              onsubmit="return confirm('Delete this box?');" style="margin-bottom:20px;">
+          <button type="submit" class="j-btn-delete">Delete This Box</button>
+        </form>
+      {% endfor %}
+    {% else %}
+      <p class="j-empty">No boxes yet — add one above.</p>
+    {% endif %}
+  </div>
+
+  <script>
+    function toggleOptions(select) {
+      const wrap = select.closest("form").querySelector(".j-options-wrap");
+      wrap.style.display = select.value === "select" ? "block" : "none";
+    }
+  </script>
+
+</body>
+</html>

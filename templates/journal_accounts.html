@@ -1,0 +1,131 @@
+<!-- journal_accounts.html -->
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8">
+  <meta name="format-detection" content="telephone=no, address=no, email=no">
+  <title>ژورنال - حساب‌ها</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/journal.css') }}">
+  <style>
+    .accounts-grid { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 20px; }
+    .account-card {
+      background: rgba(255, 255, 255, 0.10);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 12px;
+      padding: 20px 26px;
+      min-width: 140px;
+      text-align: center;
+      color: #ffffff;
+      cursor: pointer;
+      animation: jFadeUp 0.5s ease both;
+      transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+    .account-card:hover {
+      background: rgba(255, 255, 255, 0.18);
+      transform: translateY(-4px);
+      border-color: rgba(255, 255, 255, 0.45);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    }
+    .account-card:active { transform: translateY(-1px) scale(0.98); }
+    .account-name {
+      font-size: 1.3rem;
+      font-weight: bold;
+      margin-bottom: 10px;
+      display: block;
+      color: #ffffff;
+    }
+    .account-actions { display: flex; justify-content: center; gap: 8px; margin-top: 8px; }
+    .account-actions form { display: inline; }
+    .account-actions button {
+      background: none;
+      border: 1px solid rgba(255,255,255,0.3);
+      color: #ffffff;
+      border-radius: 6px;
+      padding: 4px 10px;
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+    .account-actions button:hover { background: rgba(255,255,255,0.1); }
+  </style>
+</head>
+<body class="journal-page">
+
+  {% include "_sidebar.html" %}
+
+  <a href="#" class="j-icon-btn j-fab" onclick="openAddAccount(); return false;" title="افزودن حساب">+</a>
+
+  <div class="container">
+    <h1>ژورنال - انتخاب حساب</h1>
+
+    <div class="black-box">
+      {% if accounts %}
+        <div class="accounts-grid">
+          {% for acc in accounts %}
+            <div class="account-card" onclick="window.location='/journal/{{ acc.id }}'">
+              <span class="account-name">{{ acc.name }}</span>
+              <div class="account-actions" onclick="event.stopPropagation()">
+                <button type="button" onclick="renameAccount('{{ acc.id }}', '{{ acc.name }}')">ادیت</button>
+                <form method="post" action="/journal/delete-account/{{ acc.id }}"
+                      onsubmit="return confirm('حذف این حساب و همه تریدهاش؟');">
+                  <button type="submit">حذف</button>
+                </form>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p>هنوز هیچ حسابی اضافه نکردی. از دکمه‌ی + بالای صفحه شروع کن.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- مودال افزودن حساب -->
+  <div class="j-modal-backdrop" id="jAddAccountModal" onclick="closeAddAccountOnBackdrop(event)">
+    <div class="glass-box j-modal-box">
+      <div class="j-modal-header">
+        <span>افزودن حساب</span>
+        <button type="button" class="j-modal-close" onclick="closeAddAccount()">✕</button>
+      </div>
+      <form method="post" action="/journal/add-account">
+        <label>اسم حساب</label>
+        <input type="text" name="name" placeholder="مثلا 3171541" required autofocus>
+        <div class="j-modal-actions">
+          <button type="submit" class="j-btn-add">افزودن حساب</button>
+          <button type="button" class="j-modal-cancel" onclick="closeAddAccount()">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- فرم مخفی برای ادیت اسم -->
+  <form id="renameForm" method="post" style="display:none;">
+    <input type="text" name="name" id="renameInput">
+  </form>
+
+  <script>
+    function renameAccount(id, currentName) {
+      const newName = prompt("اسم جدید حساب:", currentName);
+      if (newName && newName.trim()) {
+        const form = document.getElementById("renameForm");
+        form.action = "/journal/rename-account/" + id;
+        document.getElementById("renameInput").value = newName.trim();
+        form.submit();
+      }
+    }
+    function openAddAccount() {
+      document.getElementById("jAddAccountModal").classList.add("j-modal-open");
+    }
+    function closeAddAccount() {
+      document.getElementById("jAddAccountModal").classList.remove("j-modal-open");
+    }
+    function closeAddAccountOnBackdrop(e) {
+      if (e.target.id === "jAddAccountModal") closeAddAccount();
+    }
+  </script>
+
+</body>
+</html>

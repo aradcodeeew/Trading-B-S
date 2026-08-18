@@ -1,0 +1,101 @@
+<!-- journal_strategies.html -->
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8">
+  <meta name="format-detection" content="telephone=no, address=no, email=no">
+  <title>Journal Strategies</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/journal.css') }}">
+  <style>
+    .accounts-grid { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 20px; }
+    .account-card {
+      background: rgba(255, 255, 255, 0.10);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 12px;
+      padding: 20px 26px;
+      min-width: 160px;
+      text-align: center;
+      color: #ffffff;
+      cursor: pointer;
+      animation: jFadeUp 0.5s ease both;
+      transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+    .account-card:hover {
+      background: rgba(255, 255, 255, 0.18);
+      transform: translateY(-4px);
+      border-color: rgba(255, 255, 255, 0.45);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    }
+    .account-name { font-size: 1.2rem; font-weight: bold; margin-bottom: 10px; display: block; }
+    .account-actions { display: flex; justify-content: center; gap: 8px; margin-top: 8px; }
+    .account-actions form { display: inline; }
+    .account-actions button {
+      background: none; border: 1px solid rgba(255,255,255,0.3); color: #ffffff;
+      border-radius: 6px; padding: 4px 10px; cursor: pointer; font-size: 0.85rem;
+    }
+    .account-actions button:hover { background: rgba(255,255,255,0.1); }
+    .add-account-box { display: flex; gap: 10px; }
+    .add-account-box input[type="text"] { flex: 1; }
+  </style>
+</head>
+<body class="journal-page">
+
+  {% include "_sidebar.html" %}
+
+  <div class="container">
+    <h1>Journal Strategies</h1>
+    <div class="j-icon-row">
+      <a href="/journal" class="j-icon-btn" title="برگشت به حساب‌ها">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none"><path d="M19 12H5M5 12l6-6M5 12l6 6" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+
+    <div class="glass-box">
+      {% if strategies %}
+        <div class="accounts-grid">
+          {% for s in strategies %}
+            <div class="account-card" onclick="window.location='/journal/strategies/{{ s.id }}/fields'">
+              <span class="account-name">{{ s.name }}</span>
+              <div class="account-actions" onclick="event.stopPropagation()">
+                <button type="button" onclick="renameStrategy('{{ s.id }}', '{{ s.name }}')">Edit</button>
+                <form method="post" action="/journal/strategies/delete/{{ s.id }}"
+                      onsubmit="return confirm('Delete this strategy and its boxes?');">
+                  <button type="submit">Delete</button>
+                </form>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="j-empty">No strategies yet — add one below.</p>
+      {% endif %}
+    </div>
+
+    <form class="glass-box add-account-box" method="post" action="/journal/strategies/add">
+      <input type="text" name="name" placeholder="e.g. Pro BTB" required>
+      <button type="submit" class="j-btn-add">Add Strategy</button>
+    </form>
+  </div>
+
+  <form id="renameForm" method="post" style="display:none;">
+    <input type="text" name="name" id="renameInput">
+  </form>
+
+  <script>
+    function renameStrategy(id, currentName) {
+      const newName = prompt("New strategy name:", currentName);
+      if (newName && newName.trim()) {
+        const form = document.getElementById("renameForm");
+        form.action = "/journal/strategies/rename/" + id;
+        document.getElementById("renameInput").value = newName.trim();
+        form.submit();
+      }
+    }
+  </script>
+
+</body>
+</html>

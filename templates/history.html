@@ -3,6 +3,7 @@
 <html lang="fa">
 <head>
   <meta charset="UTF-8">
+  <meta name="format-detection" content="telephone=no, address=no, email=no">
   <title>تاریخچه تریدها</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
@@ -54,23 +55,7 @@
 </head>
 <body>
 
-  <div class="hamburger" onclick="toggleSidebar()">
-    <div class="bar"></div><div class="bar"></div><div class="bar"></div>
-  </div>
-
-  <div class="sidebar" id="sidebar">
-    <ul>
-      <li><a href="/capital">capital risk</a></li>
-      <li><a href="/risk"> risk manage </a></li>
-      <li><a href="/emotion">emotional manage</a></li>
-      <li><a href="/dashboard">dashboard</a></li>
-      <li><a href="{{ url_for('learn') }}"> Learn</a></li>
-      <li><a href="/strategies">startegy</a></li>
-      <li><a href="/history">history</a></li>
-      <li><a href="/export-backup"> Export / Backup</a></li>
-      <li><a href="/logout">Exite</a></li>
-    </ul>
-  </div>
+  {% include "_sidebar.html" %}
 
   <div class="container">
     <h1>تاریخچه تریدها</h1>

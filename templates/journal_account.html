@@ -1,0 +1,274 @@
+<!-- journal_account.html -->
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8">
+  <meta name="format-detection" content="telephone=no, address=no, email=no">
+  <title>ژورنال - {{ account.name }}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/journal.css') }}">
+  <style>
+    .journal-form {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
+    }
+    .journal-table-wrap { overflow-x: auto; }
+    .journal-table {
+      border-collapse: collapse;
+      width: 100%;
+      min-width: 1000px;
+      font-size: 0.85rem;
+    }
+    .journal-table thead { background: rgba(255, 255, 255, 0.12); }
+    .journal-table th, .journal-table td {
+      padding: 8px 10px;
+      text-align: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+      white-space: nowrap;
+      color: #ffffff;
+    }
+    .journal-table td.notes-cell { white-space: normal; max-width: 220px; text-align: right; }
+    .journal-table img.trade-thumb {
+      width: 50px; height: 50px; object-fit: cover; border-radius: 4px; cursor: pointer;
+    }
+  </style>
+</head>
+<body class="journal-page">
+
+  {% include "_sidebar.html" %}
+
+  <div class="container">
+    <h1>ژورنال حساب: {{ account.name }}</h1>
+
+    <div class="j-icon-row" style="justify-content:center;">
+      <a href="/journal" class="j-icon-btn" title="برگشت به حساب‌ها">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none"><path d="M19 12H5M5 12l6-6M5 12l6 6" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <a href="/journal/strategies" class="j-icon-btn" title="مدیریت استراتژی‌ها">✎</a>
+    </div>
+
+    {% if not strategies %}
+      <div class="glass-box j-empty">
+        هنوز هیچ استراتژی‌ای نساختی. برو <a class="j-link" href="/journal/strategies">Manage Strategies</a> و اولین استراتژیت رو بساز (مثلاً Pro BTB)، بعد باکس‌های اون استراتژی رو بساز.
+      </div>
+    {% else %}
+      <form class="glass-box" method="get" action="/journal/{{ account.id }}" style="max-width:320px;">
+        <label>استراتژی</label>
+        <select name="strategy" onchange="this.form.submit()">
+          {% for s in strategies %}
+            <option value="{{ s.id }}" {% if selected_strategy and s.id == selected_strategy.id %}selected{% endif %}>{{ s.name }}</option>
+          {% endfor %}
+        </select>
+      </form>
+
+      {% if not fields %}
+        <div class="glass-box j-empty">
+          استراتژی "{{ selected_strategy.name }}" هنوز باکسی نداره. روی علامت ✎ بالا بزن، برو تو این استراتژی و باکس‌هاش رو بساز.
+        </div>
+      {% endif %}
+    {% endif %}
+
+    <form class="glass-box journal-form" method="post" action="/journal/{{ account.id }}/add-trade" enctype="multipart/form-data">
+
+      <input type="hidden" name="strategy_id" value="{{ selected_strategy.id if selected_strategy else '' }}">
+
+      <div>
+        <label>تاریخ</label>
+        <input type="date" name="date">
+      </div>
+
+      {% for f in fields %}
+        <div>
+          <label>{{ f.label }}</label>
+          {% if f.type == 'select' %}
+            <select name="{{ f.id }}">
+              {% for opt in f.options %}<option>{{ opt }}</option>{% endfor %}
+            </select>
+          {% else %}
+            <input type="text" name="{{ f.id }}">
+          {% endif %}
+        </div>
+      {% endfor %}
+
+      <div class="full-width">
+        <label>Notes</label>
+        <textarea name="notes" rows="2" placeholder="یادداشت یا نکته‌ای درباره این ترید..."></textarea>
+      </div>
+
+      <div class="full-width">
+        <label>عکس ترید (درگ کن، کلیک کن، یا Ctrl+V بزن بعد اسکرین‌شات)</label>
+        <div class="j-photo-drop" id="jPhotoDrop">
+          <span class="j-photo-hint" id="jPhotoHint">عکس رو اینجا رها کن، کلیک کن برای انتخاب، یا بعد Shift+Win+S یه Ctrl+V بزن</span>
+          <div class="j-photo-preview-wrap" id="jPhotoPreviewWrap" style="display:none;">
+            <img id="jPhotoPreview" class="j-photo-preview">
+            <div class="j-photo-confirm-row">
+              <button type="button" class="j-photo-ok" id="jPhotoOk" title="تایید عکس">✓</button>
+              <button type="button" class="j-photo-x" id="jPhotoX" title="حذف و انتخاب دوباره">✕</button>
+            </div>
+          </div>
+        </div>
+        <input type="file" name="photo" id="jPhotoInput" accept="image/*" style="display:none;">
+      </div>
+
+      <button type="submit" class="j-btn-add-trade">افزودن ترید</button>
+    </form>
+
+    <div class="glass-box journal-table-wrap">
+      {% if trades %}
+        <table class="journal-table">
+          <thead>
+            <tr>
+              <th>#</th><th>تاریخ</th><th>Strategy</th>
+              {% for f in fields %}<th>{{ f.label }}</th>{% endfor %}
+              <th>Notes</th><th>عکس</th><th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for t in trades %}
+              <tr>
+                <td>{{ loop.revindex }}</td>
+                <td>{{ t.date }}</td>
+                <td>{{ t.strategy_name }}</td>
+                {% for f in fields %}
+                  <td>{{ t.get(f.id, '') }}</td>
+                {% endfor %}
+                <td>
+                  {% if t.notes %}
+                    <button type="button" class="j-note-btn" data-note="{{ t.notes }}" onclick="openNote(this.dataset.note)">📝 View</button>
+                  {% endif %}
+                </td>
+                <td>
+                  {% if t.photo %}
+                    <a href="/journal_uploads/{{ account.id }}/{{ t.photo }}" target="_blank">
+                      <img class="trade-thumb" src="/journal_uploads/{{ account.id }}/{{ t.photo }}">
+                    </a>
+                  {% endif %}
+                </td>
+                <td>
+                  <form method="post" action="/journal/{{ account.id }}/delete-trade/{{ t.id }}"
+                        onsubmit="return confirm('این ترید حذف بشه؟');">
+                    <button type="submit" class="j-btn-delete">حذف</button>
+                  </form>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p class="j-empty">هنوز تریدی برای این حساب ثبت نشده.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="j-modal-backdrop" id="jNoteModal" onclick="closeNoteOnBackdrop(event)">
+    <div class="glass-box j-modal-box">
+      <div class="j-modal-header">
+        <span>Note</span>
+        <button type="button" class="j-modal-close" onclick="closeNote()">✕</button>
+      </div>
+      <p class="j-modal-text" id="jNoteText"></p>
+    </div>
+  </div>
+
+  {% if just_added %}
+    <div class="j-toast" id="jToast">done</div>
+  {% endif %}
+
+  <script>
+    function openNote(text) {
+      document.getElementById("jNoteText").textContent = text;
+      document.getElementById("jNoteModal").classList.add("j-modal-open");
+    }
+    function closeNote() {
+      document.getElementById("jNoteModal").classList.remove("j-modal-open");
+    }
+    function closeNoteOnBackdrop(e) {
+      if (e.target.id === "jNoteModal") closeNote();
+    }
+
+    // ---- عکس ترید: درگ / کلیک / پیست ----
+    const dropZone = document.getElementById("jPhotoDrop");
+    const photoInput = document.getElementById("jPhotoInput");
+    const hint = document.getElementById("jPhotoHint");
+    const previewWrap = document.getElementById("jPhotoPreviewWrap");
+    const previewImg = document.getElementById("jPhotoPreview");
+    const okBtn = document.getElementById("jPhotoOk");
+    const xBtn = document.getElementById("jPhotoX");
+
+    function setPhotoFile(file) {
+      if (!file || !file.type.startsWith("image/")) return;
+      const dt = new DataTransfer();
+      dt.items.add(file);
+      photoInput.files = dt.files;
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        previewImg.src = e.target.result;
+        hint.style.display = "none";
+        previewWrap.style.display = "flex";
+        dropZone.classList.remove("j-confirmed");
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function clearPhoto() {
+      photoInput.value = "";
+      previewImg.src = "";
+      previewWrap.style.display = "none";
+      hint.style.display = "block";
+      dropZone.classList.remove("j-confirmed");
+    }
+
+    dropZone.addEventListener("click", (e) => {
+      if (e.target === okBtn || e.target === xBtn) return;
+      photoInput.click();
+    });
+
+    dropZone.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      dropZone.classList.add("j-dragover");
+    });
+    dropZone.addEventListener("dragleave", () => {
+      dropZone.classList.remove("j-dragover");
+    });
+    dropZone.addEventListener("drop", (e) => {
+      e.preventDefault();
+      dropZone.classList.remove("j-dragover");
+      if (e.dataTransfer.files.length) setPhotoFile(e.dataTransfer.files[0]);
+    });
+
+    photoInput.addEventListener("change", () => {
+      if (photoInput.files.length) setPhotoFile(photoInput.files[0]);
+    });
+
+    document.addEventListener("paste", (e) => {
+      const items = e.clipboardData ? e.clipboardData.items : [];
+      for (const item of items) {
+        if (item.type && item.type.startsWith("image/")) {
+          setPhotoFile(item.getAsFile());
+          break;
+        }
+      }
+    });
+
+    okBtn.addEventListener("click", () => {
+      dropZone.classList.add("j-confirmed");
+    });
+    xBtn.addEventListener("click", clearPhoto);
+
+    const toast = document.getElementById("jToast");
+    if (toast) {
+      setTimeout(() => {
+        toast.classList.add("j-fade");
+        setTimeout(() => toast.remove(), 1000);
+      }, 5000);
+      if (window.history.replaceState) {
+        window.history.replaceState(null, "", "/journal/{{ account.id }}");
+      }
+    }
+  </script>
+
+</body>
+</html>

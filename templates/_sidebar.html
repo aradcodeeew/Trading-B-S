@@ -1,0 +1,50 @@
+<!-- _sidebar.html : این فایل توی همه‌ی صفحات include میشه -->
+<nav class="j-rail" id="jRail">
+  <div class="j-rail-pill" id="jRailPill"></div>
+
+  <div class="j-rail-group">
+    <a href="/dashboard" class="j-rail-item" data-path="/dashboard">
+      <span class="j-rail-icon">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M3 11L12 3L21 11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 10V20H19V10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </span>
+      <span class="j-rail-label">Home</span>
+    </a>
+
+    <a href="/settings" class="j-rail-item" data-path="/settings">
+      <span class="j-rail-icon">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M12 15a3 3 0 100-6 3 3 0 000 6z" stroke="currentColor" stroke-width="1.8"/><path d="M19.4 13a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V19a2 2 0 11-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H4a2 2 0 110-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H10a1.65 1.65 0 001-1.51V4a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V10a1.65 1.65 0 001.51 1H20a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </span>
+      <span class="j-rail-label">Settings</span>
+    </a>
+
+    <button type="button" class="j-rail-item j-theme-toggle" id="jThemeToggle">
+      <span class="j-rail-icon j-theme-icon-wrap">
+        <svg class="j-icon-sun" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="4.5" stroke="currentColor" stroke-width="1.8"/><path d="M12 2v2.2M12 19.8V22M4.2 4.2l1.6 1.6M18.2 18.2l1.6 1.6M2 12h2.2M19.8 12H22M4.2 19.8l1.6-1.6M18.2 5.8l1.6-1.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <svg class="j-icon-moon" viewBox="0 0 24 24" fill="none"><path d="M20 14.5A8.5 8.5 0 119.5 4a7 7 0 1010.5 10.5z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+      </span>
+      <span class="j-rail-label" id="jThemeLabel">Dark Mode</span>
+    </button>
+
+    <a href="/logout" class="j-rail-item j-rail-logout" data-path="/logout">
+      <span class="j-rail-icon">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 17l5-5-5-5M21 12H9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </span>
+      <span class="j-rail-label">Logout</span>
+    </a>
+  </div>
+
+  <div class="j-rail-divider"></div>
+
+  <div class="j-rail-group j-rail-templates">
+    <a href="/capital" class="j-rail-item" data-path="/capital"><span class="j-rail-dot"></span><span class="j-rail-label">Capital Risk</span></a>
+    <a href="/risk" class="j-rail-item" data-path="/risk"><span class="j-rail-dot"></span><span class="j-rail-label">Risk Manage</span></a>
+    <a href="/emotion" class="j-rail-item" data-path="/emotion"><span class="j-rail-dot"></span><span class="j-rail-label">Emotion</span></a>
+    <a href="{{ url_for('learn') }}" class="j-rail-item" data-path="/learn"><span class="j-rail-dot"></span><span class="j-rail-label">Learn</span></a>
+    <a href="/strategies" class="j-rail-item" data-path="/strategies"><span class="j-rail-dot"></span><span class="j-rail-label">Strategy</span></a>
+    <a href="/history" class="j-rail-item" data-path="/history"><span class="j-rail-dot"></span><span class="j-rail-label">History</span></a>
+    <a href="/journal" class="j-rail-item" data-path="/journal"><span class="j-rail-dot"></span><span class="j-rail-label">Journal</span></a>
+    <a href="/export-backup" class="j-rail-item" data-path="/export-backup"><span class="j-rail-dot"></span><span class="j-rail-label">Export / Backup</span></a>
+  </div>
+</nav>
+
+<script src="{{ url_for('static', filename='js/rail.js') }}"></script>
