@@ -1,0 +1,39 @@
+توی همون ترمینال بزن: pip install flask flaskwebgui werkzeug 
+به‌جاش بزن pip install -r requirements.txt
+ python app.py
+
+ pip install flask flaskwebgui werkzeug  
+ pip install flask flaskwebgui werkzeug; python app.py
+
+Trading-B-S/
+│
+├── app.py                     ← قلب اپ (411 خط) — همه‌ی route ها اینجان
+├── strategy_engine.py         ← (41 خط) توابع مدیریت استراتژی‌ها (لود/سیو/حذف)
+│
+├── templates/                 ← صفحات HTML (هر route یه فایل)
+│   ├── welcome.html           ← صفحه‌ی اول/لاگین (34 خط)
+│   ├── dashboard.html         ← صفحه‌ی محاسبه ریسک + ثبت نتیجه (84 خط)
+│   ├── history.html           ← تاریخچه‌ی win/loss (115 خط)
+│   ├── capital.html           ← یادداشت سرمایه (130 خط)
+│   ├── risk.html              ← مدیریت ریسک (129 خط)
+│   ├── emotion.html           ← مدیریت احساسات (129 خط)
+│   ├── strategies.html        ← صفحه‌ی استراتژی‌ها (347 خط، بزرگ‌ترین template)
+│   ├── learn.html             ← بخش آموزش (223 خط)
+│   └── export_backup.html     ← export/import بکاپ (91 خط)
+│
+├── static/
+│   ├── css/dashboard.css      ← استایل اصلی همه‌ی صفحات (235 خط)
+│   ├── css/welcome.css        ← استایل صفحه‌ی اول (96 خط)
+│   ├── js/dashboard.js        ← جاوااسکریپت صفحات اصلی (28 خط)
+│   └── js/welcome.js          ← جاوااسکریپت صفحه‌ی اول (23 خط)
+│
+└── TradingAppData/            ← دیتای ذخیره‌شده (نه کد، فایل‌های داده)
+    ├── history.json           ← تاریخچه‌ی ترید (win/loss/risk)
+    ├── strategies.json        ← لیست استراتژی‌ها
+    └── learn_data.json        ← پست‌های بخش آموزش
+
+    for setup
+   1-  pip install pyinstaller 
+   2 -  python -m PyInstaller app.py --onefile --noconsole --icon="arad_icon.ico" --add-data "templates;templates" --add-data "static;static" --add-data "TradingAppData;TradingAppData"
+    file go to dist\app.exe
+    3 - click isi file and done
