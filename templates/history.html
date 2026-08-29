@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="format-detection" content="telephone=no, address=no, email=no">
-  <title>تاریخچه تریدها</title>
+  <title>trade history</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
   <style>
@@ -58,7 +58,7 @@
   {% include "_sidebar.html" %}
 
   <div class="container">
-    <h1>تاریخچه تریدها</h1>
+    <h1> trade history</h1>
     <div class="black-box">
       <form method="post" action="/clear-history" onsubmit="return confirm('Are you sure you want to clear all history?');" style="margin-bottom: 15px;">
         <button type="submit" class="btn-blue" style="background-color: #dc3545;">🧹 Clear All History</button>
@@ -67,9 +67,9 @@
         <table class="history-table">
           <thead>
             <tr>
-              <th>تاریخ و زمان</th>
-              <th>نتیجه</th>
-              <th>ریسک (%)</th>
+              <th>time</th>
+              <th>result</th>
+              <th>risk (%)</th>
             </tr>
           </thead>
           <tbody>
@@ -77,7 +77,7 @@
               <tr>
                 <td>{{ h.timestamp }}</td>
                 <td class="{% if h.result == 'win' %}result-win{% else %}result-loss{% endif %}">
-                  {{ 'برد' if h.result == 'win' else 'باخت' }}
+                  {{ 'win' if h.result == 'win' else 'loss' }}
                 </td>
                 <td>{{ h.risk }}</td>
               </tr>
@@ -85,7 +85,7 @@
           </tbody>
         </table>
       {% else %}
-        <p>هیچ داده‌ای ثبت نشده است.</p>
+        <p>no trade </p>
       {% endif %}
     </div>
   </div>

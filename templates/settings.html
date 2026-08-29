@@ -16,23 +16,38 @@
     <h1>Settings</h1>
 
     <form class="glass-box" method="post" style="max-width:420px;">
-      <p style="margin-bottom:14px;">الان با یوزرنیم <strong>{{ username }}</strong> واردی</p>
+      {% if has_auth %}
+        <p style="margin-bottom:14px;">you are in with <strong>{{ username }}</strong> </p>
 
-      <label>رمز فعلی</label>
-      <input type="password" name="current_password" required>
+        <label>current password</label>
+        <input type="password" name="current_password" required>
 
-      <div style="height:12px;"></div>
+        <div style="height:12px;"></div>
 
-      <label>نام کاربری جدید</label>
-      <input type="text" name="new_username" value="{{ username }}" required>
+        <label> new usename </label>
+        <input type="text" name="new_username" value="{{ username }}" required>
 
-      <div style="height:12px;"></div>
+        <div style="height:12px;"></div>
 
-      <label>رمز جدید (اگه خالی بذاری، رمز عوض نمیشه)</label>
-      <input type="password" name="new_password">
+        <label>رمز جدید (اگه خالی بذاری، رمز عوض نمیشه)</label>
+        <input type="password" name="new_password">
 
-      <div style="height:16px;"></div>
-      <button type="submit" class="j-btn-save">ذخیره تغییرات</button>
+        <div style="height:16px;"></div>
+        <button type="submit" class="j-btn-save">SAVE CHANGES</button>
+      {% else %}
+        <p style="margin-bottom:14px;">الان اپ بدون رمز بازه. اگه می‌خوای از این به بعد هر بار باز کردن اپ رمز بخواد، اینجا یه رمز بساز:</p>
+
+        <label>نام کاربری</label>
+        <input type="text" name="new_username" placeholder="مثلا mehdi" required>
+
+        <div style="height:12px;"></div>
+
+        <label>رمز عبور</label>
+        <input type="password" name="new_password" placeholder="یه رمز انتخاب کن" required>
+
+        <div style="height:16px;"></div>
+        <button type="submit" class="j-btn-save">ساخت رمز ورود</button>
+      {% endif %}
     </form>
 
     {% if error %}<p style="color:#ff6b6b;margin-top:10px;">{{ error }}</p>{% endif %}

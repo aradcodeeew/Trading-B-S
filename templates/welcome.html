@@ -12,22 +12,24 @@
   <div class="container">
     <h1>Trading Room ARAD</h1>
     <div class="black-box">
-      {% if setup %}
-        <p style="margin-bottom:14px;">اولین باره اپ رو باز می‌کنی — یه نام کاربری و رمز برای خودت بساز</p>
+      {% if no_password %}
+        <p style="margin-bottom:18px;">هنوز رمزی تنظیم نکردی — می‌تونی مستقیم وارد بشی.</p>
+        <a href="/dashboard" class="btn-calculate" style="display:inline-block; text-decoration:none;">Login</a>
+      {% else %}
+        <form method="POST">
+          <div class="input-group">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required />
+          </div>
+
+          <div class="input-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required />
+          </div>
+
+          <button type="submit" class="btn-calculate">Login</button>
+        </form>
       {% endif %}
-      <form method="POST">
-        <div class="input-group">
-          <label for="username">Username:</label>
-          <input type="text" id="username" name="username" required />
-        </div>
-
-        <div class="input-group">
-          <label for="password">Password:</label>
-          <input type="password" id="password" name="password" required />
-        </div>
-
-        <button type="submit" class="btn-calculate">{{ "ساخت حساب" if setup else "Login" }}</button>
-      </form>
 
       {% if error %}
       <div class="alert">{{ error }}</div>

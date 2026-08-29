@@ -18,8 +18,7 @@ body {
 h1 {
   font-size: 2rem;
   margin-bottom: 30px;
-  color: #00ffc8;
-  text-shadow: 0 0 5px rgba(0,255,200,0.5);
+  color: #ffffff;
 }
 
 /* جعبه شیشه‌ای */
@@ -332,13 +331,18 @@ body.journal-page {
 body { padding-left: 64px; box-sizing: border-box; }
 
 /* ---- حالت روشن (Light mode) ---- */
-html.j-light body { background-image: none; background-color: #eef1f5; }
+html.j-light body {
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)),
+    url('/static/images/main.png') no-repeat center center fixed;
+  background-size: cover;
+}
 html.j-light .container, html.j-light h1, html.j-light p, html.j-light label {
   color: #1c1e21 !important;
 }
 html.j-light .black-box, html.j-light .glass-box, html.j-light .account-card, html.j-light .j-rail {
-  background: rgba(255, 255, 255, 0.55) !important;
-  border-color: rgba(0, 0, 0, 0.08) !important;
+  background: rgba(255, 255, 255, 0.38) !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
   color: #1c1e21 !important;
 }
 html.j-light .j-rail-item { color: #33363b; }

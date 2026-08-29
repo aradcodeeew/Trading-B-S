@@ -324,3 +324,27 @@
   transition: background 0.2s ease;
 }
 .j-modal-cancel:hover { background: rgba(220, 53, 69, 0.5); }
+
+/* دکمه‌ی خروجی اکسل */
+.j-excel-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(33, 150, 83, 0.18);
+  color: #ffffff;
+  border: 1px solid rgba(33, 150, 83, 0.5);
+  border-radius: 8px;
+  padding: 8px 16px;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+.j-excel-btn:hover { background: rgba(33, 150, 83, 0.4); transform: translateY(-1px); }
+.j-excel-btn:active { transform: translateY(0) scale(0.97); }
+
+.j-icon-btn:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}

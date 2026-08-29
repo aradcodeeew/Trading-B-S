@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="format-detection" content="telephone=no, address=no, email=no">
-  <title>ژورنال - {{ account.name }}</title>
+  <title>journal - {{ account.name }}</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/journal.css') }}">
@@ -41,6 +41,9 @@
 
   <div class="container">
     <h1>ژورنال حساب: {{ account.name }}</h1>
+    {% if account.starting_balance %}
+      <p style="margin-top:-20px; margin-bottom:20px; color:rgba(255,255,255,0.7);">بالانس شروع: ${{ account.starting_balance }}</p>
+    {% endif %}
 
     <div class="j-icon-row" style="justify-content:center;">
       <a href="/journal" class="j-icon-btn" title="برگشت به حساب‌ها">
@@ -48,6 +51,16 @@
       </a>
       <a href="/journal/strategies" class="j-icon-btn" title="مدیریت استراتژی‌ها">✎</a>
     </div>
+
+    {% if not account.starting_balance %}
+      <div class="glass-box">
+        <p style="margin-bottom:10px;">اولین باره این حساب رو تو ژورنال باز می‌کنی — از چه رقمی (دلار) بالانس این حساب رو شروع کردی؟</p>
+        <form method="post" action="/journal/{{ account.id }}/set-starting-balance" style="display:flex; gap:10px;">
+          <input type="text" name="starting_balance" placeholder="مثلا 1000" required style="flex:1;">
+          <button type="submit" class="j-btn-add">ثبت</button>
+        </form>
+      </div>
+    {% endif %}
 
     {% if not strategies %}
       <div class="glass-box j-empty">
@@ -97,6 +110,11 @@
         <textarea name="notes" rows="2" placeholder="یادداشت یا نکته‌ای درباره این ترید..."></textarea>
       </div>
 
+      <div>
+        <label>بالانس حساب بعد این ترید ($)</label>
+        <input type="text" name="balance" placeholder="مثلا 1042.50">
+      </div>
+
       <div class="full-width">
         <label>عکس ترید (درگ کن، کلیک کن، یا Ctrl+V بزن بعد اسکرین‌شات)</label>
         <div class="j-photo-drop" id="jPhotoDrop">
@@ -117,12 +135,18 @@
 
     <div class="glass-box journal-table-wrap">
       {% if trades %}
+        <div style="display:flex; justify-content:flex-end; margin-bottom:12px;">
+          <a href="/journal/{{ account.id }}/export-excel{% if selected_strategy %}?strategy={{ selected_strategy.id }}{% endif %}"
+             class="j-excel-btn" title="خروجی اکسل">
+            📊 Export Excel
+          </a>
+        </div>
         <table class="journal-table">
           <thead>
             <tr>
               <th>#</th><th>تاریخ</th><th>Strategy</th>
               {% for f in fields %}<th>{{ f.label }}</th>{% endfor %}
-              <th>Notes</th><th>عکس</th><th></th>
+              <th>Notes</th><th>Balance</th><th>عکس</th><th></th>
             </tr>
           </thead>
           <tbody>
@@ -139,6 +163,7 @@
                     <button type="button" class="j-note-btn" data-note="{{ t.notes }}" onclick="openNote(this.dataset.note)">📝 View</button>
                   {% endif %}
                 </td>
+                <td>{{ t.balance }}</td>
                 <td>
                   {% if t.photo %}
                     <a href="/journal_uploads/{{ account.id }}/{{ t.photo }}" target="_blank">

@@ -69,10 +69,18 @@
             <button type="submit" class="j-btn-save">Save Changes</button>
           </div>
         </form>
-        <form method="post" action="/journal/strategies/{{ strategy.id }}/fields/delete/{{ f.id }}"
-              onsubmit="return confirm('Delete this box?');" style="margin-bottom:20px;">
-          <button type="submit" class="j-btn-delete">Delete This Box</button>
-        </form>
+        <div style="display:flex; gap:8px; align-items:center; margin-bottom:20px;">
+          <form method="post" action="/journal/strategies/{{ strategy.id }}/fields/move/{{ f.id }}/up">
+            <button type="submit" class="j-icon-btn" style="width:34px;height:34px;" title="بالا" {% if loop.first %}disabled{% endif %}>↑</button>
+          </form>
+          <form method="post" action="/journal/strategies/{{ strategy.id }}/fields/move/{{ f.id }}/down">
+            <button type="submit" class="j-icon-btn" style="width:34px;height:34px;" title="پایین" {% if loop.last %}disabled{% endif %}>↓</button>
+          </form>
+          <form method="post" action="/journal/strategies/{{ strategy.id }}/fields/delete/{{ f.id }}"
+                onsubmit="return confirm('Delete this box?');" style="flex:1;">
+            <button type="submit" class="j-btn-delete" style="width:100%;">Delete This Box</button>
+          </form>
+        </div>
       {% endfor %}
     {% else %}
       <p class="j-empty">No boxes yet for this strategy — add one above.</p>

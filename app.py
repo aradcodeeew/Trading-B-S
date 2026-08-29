@@ -2,7 +2,6 @@
 
 from flask import Flask, render_template, request, redirect, send_file, url_for, send_from_directory, make_response
 from flaskwebgui import FlaskUI
-from strategy_engine import load_strategies, save_strategy, delete_strategy
 from datetime import datetime
 from io import BytesIO
 import os
@@ -13,6 +12,7 @@ import zipfile
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
 import uuid
+from openpyxl import Workbook
 
 app = Flask(__name__, static_url_path='/static')
 
@@ -211,29 +211,23 @@ def learn_image(filename):
 def welcome():
     auth = load_auth()
 
+    # هنوز از تنظیمات رمزی نساخته - یه ولکام ساده با دکمه‌ی ورود (بدون فیلد) نشون بده
+    if auth is None:
+        return render_template("welcome.html", no_password=True)
+
     if request.method == "POST":
         username = request.form.get("username", "").strip()
         password = request.form.get("password", "")
 
-        if auth is None:
-            # بار اول - داره حساب می‌سازه
-            if not username or not password:
-                return render_template("welcome.html", setup=True, error="نام کاربری و رمز رو کامل بنویس")
-            save_auth(username, password)
-            resp = make_response(redirect("/dashboard"))
-            resp.set_cookie("remember_login", "yes", max_age=60 * 60 * 24 * 365 * 10)
-            return resp
-
-        # ورود عادی
         if username == auth["username"] and check_password_hash(auth["password_hash"], password):
             resp = make_response(redirect("/dashboard"))
             resp.set_cookie("remember_login", "yes", max_age=60 * 60 * 24 * 365 * 10)
             return resp
-        return render_template("welcome.html", setup=False, error="نام کاربری یا رمز عبور اشتباه است!")
+        return render_template("welcome.html", error="نام کاربری یا رمز عبور اشتباه است!")
 
-    if auth is not None and request.cookies.get("remember_login") == "yes":
+    if request.cookies.get("remember_login") == "yes":
         return redirect("/dashboard")
-    return render_template("welcome.html", setup=(auth is None))
+    return render_template("welcome.html")
 
 # خروج از سیستم
 @app.route("/settings", methods=["GET", "POST"])
@@ -243,21 +237,36 @@ def settings_page():
     auth = load_auth()
 
     if request.method == "POST":
-        current_password = request.form.get("current_password", "")
         new_username = request.form.get("new_username", "").strip()
         new_password = request.form.get("new_password", "")
 
-        if not check_password_hash(auth["password_hash"], current_password):
-            error = "رمز فعلی اشتباهه"
-        elif not new_username:
-            error = "نام کاربری نمی‌تونه خالی باشه"
+        if auth is None:
+            # اولین باره داره رمز ورود می‌سازه
+            if not new_username or not new_password:
+                error = "نام کاربری و رمز رو کامل بنویس"
+            else:
+                save_auth(new_username, new_password)
+                success = "رمز ورود ساخته شد. از این به بعد هر بار اپ رو باز کنی رمز می‌خواد."
+                auth = load_auth()
         else:
-            final_password = new_password if new_password else current_password
-            save_auth(new_username, final_password)
-            success = "تغییرات ذخیره شد"
-            auth = load_auth()
+            current_password = request.form.get("current_password", "")
+            if not check_password_hash(auth["password_hash"], current_password):
+                error = "رمز فعلی اشتباهه"
+            elif not new_username:
+                error = "نام کاربری نمی‌تونه خالی باشه"
+            else:
+                final_password = new_password if new_password else current_password
+                save_auth(new_username, final_password)
+                success = "تغییرات ذخیره شد"
+                auth = load_auth()
 
-    return render_template("settings.html", username=auth["username"], error=error, success=success)
+    return render_template(
+        "settings.html",
+        username=(auth["username"] if auth else ""),
+        has_auth=(auth is not None),
+        error=error,
+        success=success,
+    )
 
 
 @app.route("/logout")
@@ -396,47 +405,6 @@ def clear_history():
         json.dump([], f)
     return redirect("/history")
 
-# صفحه استراتژی‌ها
-@app.route("/strategies", methods=["GET"])
-def strategies_page():
-    strategies = load_strategies()
-    return render_template("strategies.html", strategies=strategies)
-
-@app.route("/strategies/test", methods=["POST"])
-def strategies_test():
-    cycle = request.form.get("cycle")
-    direction = request.form.get("direction")
-    strategies = load_strategies()
-
-    filtered = [s for s in strategies if s["cycle_type"] == cycle and s["direction"] == direction]
-
-    i = 0
-    while f"condition_{i}" in request.form:
-        cond_value = request.form.get(f"condition_{i}")
-        filtered = [s for s in filtered if len(s["conditions"]) > i and s["conditions"][i] == cond_value]
-        i += 1
-
-    if not filtered:
-        return render_template("strategies.html", strategies=strategies, test_result="❌ هیچ استراتژی با این شرایط پیدا نشد")
-
-    return render_template("strategies.html", strategies=strategies, test_result=filtered[0]["result"])
-
-@app.route("/strategies/add", methods=["POST"])
-def strategies_add():
-    name = request.form.get("name")
-    cycle_type = request.form.get("cycle_type")
-    direction = request.form.get("direction")
-    titles = request.form.getlist("condition_titles")
-    values = request.form.getlist("condition_values")
-    result = request.form.get("result")
-    conditions = request.form.getlist("condition_values")
-    save_strategy(name, cycle_type, direction, conditions, result)
-    return redirect("/strategies")
-
-@app.route("/strategies/delete/<int:index>", methods=["POST"])
-def delete_strategy_route(index):
-    delete_strategy(index)
-    return redirect("/strategies")
 # صفحه یادگیری تصویری (Learn)
 @app.route("/learn", methods=["GET", "POST"])
 def learn():
@@ -522,7 +490,6 @@ def export_zip():
     zip_stream = BytesIO()
     with zipfile.ZipFile(zip_stream, "w", zipfile.ZIP_DEFLATED) as zf:
         files_to_zip = [
-            "capital.txt", "risk.txt", "emotion.txt",
             "strategies.json", "learn_data.json",
             "journal_accounts.json", "journal_fields.json",
             "journal_strategies.json", "auth.json"
@@ -531,6 +498,12 @@ def export_zip():
             fpath = os.path.join(DATA_DIR, fname)
             if os.path.exists(fpath):
                 zf.write(fpath, arcname=fname)
+
+        # یادداشت‌های مدیریت سرمایه / ریسک / احساس (اینا توی notes/ هستن، نه ریشه‌ی DATA_DIR)
+        for fname in ["capital.txt", "risk.txt", "emotion.txt"]:
+            fpath = os.path.join(NOTES_DIR, fname)
+            if os.path.exists(fpath):
+                zf.write(fpath, arcname=os.path.join("notes", fname))
 
         # فایل‌های ژورنال هر حساب
         if os.path.isdir(JOURNAL_DIR):
@@ -672,6 +645,19 @@ def journal_strategy_fields_delete(strategy_id, field_id):
     return redirect(f"/journal/strategies/{strategy_id}/fields")
 
 
+@app.route("/journal/strategies/<strategy_id>/fields/move/<field_id>/<direction>", methods=["POST"])
+def journal_strategy_fields_move(strategy_id, field_id, direction):
+    fields = load_strategy_fields(strategy_id)
+    idx = next((i for i, f in enumerate(fields) if f["id"] == field_id), None)
+    if idx is not None:
+        if direction == "up" and idx > 0:
+            fields[idx - 1], fields[idx] = fields[idx], fields[idx - 1]
+        elif direction == "down" and idx < len(fields) - 1:
+            fields[idx + 1], fields[idx] = fields[idx], fields[idx + 1]
+        save_strategy_fields(strategy_id, fields)
+    return redirect(f"/journal/strategies/{strategy_id}/fields")
+
+
 # ---------- مدیریت باکس‌های ژورنال (خودت اضافه/حذف/ادیت می‌کنی) ----------
 @app.route("/journal/fields", methods=["GET"])
 def journal_fields_page():
@@ -770,6 +756,7 @@ def journal_account_page(account_id):
     if not account:
         return redirect("/journal")
     trades = load_journal_trades(account_id)
+    has_any_trade = len(trades) > 0
     strategies = load_journal_strategies()
 
     selected_id = request.args.get("strategy") or account.get("last_strategy_id")
@@ -788,8 +775,65 @@ def journal_account_page(account_id):
         fields=fields,
         strategies=strategies,
         selected_strategy=selected_strategy,
+        has_any_trade=has_any_trade,
         just_added=request.args.get("added"),
     )
+
+
+@app.route("/journal/<account_id>/export-excel", methods=["GET"])
+def journal_export_excel(account_id):
+    accounts = load_journal_accounts()
+    account = next((a for a in accounts if a["id"] == account_id), None)
+    if not account:
+        return redirect("/journal")
+
+    trades = load_journal_trades(account_id)
+    strategies = load_journal_strategies()
+
+    selected_id = request.args.get("strategy") or account.get("last_strategy_id")
+    selected_strategy = next((s for s in strategies if s["id"] == selected_id), None)
+    if not selected_strategy and strategies:
+        selected_strategy = strategies[0]
+
+    fields = load_strategy_fields(selected_strategy["id"]) if selected_strategy else []
+    if selected_strategy:
+        trades = [t for t in trades if t.get("strategy_id") == selected_strategy["id"]]
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Journal"
+
+    headers = ["Date", "Strategy"] + [f["label"] for f in fields] + ["Notes", "Balance"]
+    ws.append(headers)
+
+    for t in trades:
+        row = [t.get("date", ""), t.get("strategy_name", "")]
+        row += [t.get(f["id"], "") for f in fields]
+        row += [t.get("notes", ""), t.get("balance", "")]
+        ws.append(row)
+
+    for col in ws.columns:
+        max_len = max((len(str(c.value)) if c.value else 0) for c in col)
+        ws.column_dimensions[col[0].column_letter].width = min(max(max_len + 2, 10), 40)
+
+    stream = BytesIO()
+    wb.save(stream)
+    stream.seek(0)
+
+    strategy_part = selected_strategy["name"] if selected_strategy else "journal"
+    filename = f"{account['name']}_{strategy_part}.xlsx".replace(" ", "_")
+    return send_file(stream, as_attachment=True, download_name=filename)
+
+
+@app.route("/journal/<account_id>/set-starting-balance", methods=["POST"])
+def journal_set_starting_balance(account_id):
+    balance = request.form.get("starting_balance", "").strip()
+    accounts = load_journal_accounts()
+    for a in accounts:
+        if a["id"] == account_id:
+            a["starting_balance"] = balance
+    save_journal_accounts(accounts)
+    return redirect(f"/journal/{account_id}")
 
 
 @app.route("/journal/<account_id>/add-trade", methods=["POST"])
@@ -806,6 +850,7 @@ def journal_add_trade(account_id):
         "strategy_id": strategy_id,
         "strategy_name": strategy["name"] if strategy else "",
         "notes": request.form.get("notes", ""),
+        "balance": request.form.get("balance", ""),
         "photo": "",
     }
     for f in fields:
