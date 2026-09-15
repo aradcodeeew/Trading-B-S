@@ -45,19 +45,19 @@
 
     <div class="glass-panel">
       <h2>🔰 Backup All</h2>
-      <p>همه فایل‌ها: یادداشت‌ها، استراتژی‌ها، آموزش‌ها و تصاویر داخل یک فایل زیپ ذخیره می‌شن</p>
-      <a href="/export-zip" class="btn-green">⬇️ دریافت فایل بکآپبخش کامل</a>
+      <p>All files: notes, strategies, lessons and images are saved into one zip file</p>
+      <a href="/export-zip" class="btn-green">⬇️ Download full backup file</a>
     </div>
 
     <div class="glass-panel">
       <h2>🔁 Restore Backup</h2>
-      <p>فایل زیپ رو وارد کن تا کل اطلاعات اپلیکیشن برگرده سرجاش</p>
+      <p>Upload the zip file to restore all app data</p>
       <form action="/restore-notes" method="post" enctype="multipart/form-data">
-        <label for="backup_zip" class="btn-blue" style="cursor: pointer;">📁 انتخاب فایل</label>
+        <label for="backup_zip" class="btn-blue" style="cursor: pointer;">📁 Choose File</label>
         <input type="file" name="backup_zip" id="backup_zip" accept=".zip" required style="display: none;" onchange="showFilename()">
-        <span id="selected-filename" style="margin-right: 10px; opacity: 0.8;">هیچ فایلی انتخاب نشده</span>
+        <span id="selected-filename" style="margin-right: 10px; opacity: 0.8;">No file selected</span>
         <br>
-        <button type="submit" class="btn-blue" style="margin-top: 12px;">♻️ بازیابی کامل</button>
+        <button type="submit" class="btn-blue" style="margin-top: 12px;">♻️ Restore Everything</button>
       </form>
     </div>
   </div>
@@ -69,7 +69,7 @@
     function showFilename() {
       const input = document.getElementById('backup_zip');
       const label = document.getElementById('selected-filename');
-      label.textContent = input.files.length > 0 ? "📎 " + input.files[0].name : "هیچ فایلی انتخاب نشده";
+      label.textContent = input.files.length > 0 ? "📎 " + input.files[0].name : "No file selected";
     }
   </script>
 </body>

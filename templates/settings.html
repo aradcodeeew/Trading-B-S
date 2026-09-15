@@ -29,24 +29,24 @@
 
         <div style="height:12px;"></div>
 
-        <label>رمز جدید (اگه خالی بذاری، رمز عوض نمیشه)</label>
+        <label>New password (leave empty to keep it unchanged)</label>
         <input type="password" name="new_password">
 
         <div style="height:16px;"></div>
         <button type="submit" class="j-btn-save">SAVE CHANGES</button>
       {% else %}
-        <p style="margin-bottom:14px;">الان اپ بدون رمز بازه. اگه می‌خوای از این به بعد هر بار باز کردن اپ رمز بخواد، اینجا یه رمز بساز:</p>
+        <p style="margin-bottom:14px;">The app is currently open without a password. If you want it to require a password from now on, set one here:</p>
 
-        <label>نام کاربری</label>
-        <input type="text" name="new_username" placeholder="مثلا mehdi" required>
+        <label>Username</label>
+        <input type="text" name="new_username" placeholder="e.g. mehdi" required>
 
         <div style="height:12px;"></div>
 
-        <label>رمز عبور</label>
-        <input type="password" name="new_password" placeholder="یه رمز انتخاب کن" required>
+        <label>Password</label>
+        <input type="password" name="new_password" placeholder="Choose a password" required>
 
         <div style="height:16px;"></div>
-        <button type="submit" class="j-btn-save">ساخت رمز ورود</button>
+        <button type="submit" class="j-btn-save">Create Login Password</button>
       {% endif %}
     </form>
 

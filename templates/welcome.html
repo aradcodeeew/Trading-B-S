@@ -5,29 +5,49 @@
   <meta charset="UTF-8" />
   <meta name="format-detection" content="telephone=no, address=no, email=no">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login</title>
+  <title>Trade App</title>
+  <script>
+    if (localStorage.getItem('jTheme') === 'light') {
+      document.documentElement.classList.add('j-light');
+    }
+  </script>
+  <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/arad_icon.ico') }}" />
   <link rel="stylesheet" href="{{ url_for('static', filename='css/welcome.css') }}" />
 </head>
 <body>
-  <div class="container">
-    <h1>Trading Room ARAD</h1>
+  <a class="welcome-brand" href="/" aria-label="Trade App">
+    <img src="{{ url_for('static', filename='images/arad_icon.ico') }}" alt="Trade App" />
+  </a>
+  <div class="splash" aria-hidden="true">
+    <div class="drop-stage">
+      <span class="drop drop-one"></span>
+      <span class="drop drop-two"></span>
+      <span class="drop drop-three"></span>
+      <span class="drop drop-four"></span>
+      <span class="main-drop"></span>
+      <span class="splash-title">trade app</span>
+    </div>
+  </div>
+
+  <div class="container" id="auth-screen">
+    <h1>Trade App</h1>
     <div class="black-box">
       {% if no_password %}
-        <p style="margin-bottom:18px;">هنوز رمزی تنظیم نکردی — می‌تونی مستقیم وارد بشی.</p>
-        <a href="/dashboard" class="btn-calculate" style="display:inline-block; text-decoration:none;">Login</a>
+        <p class="setup-message">No password set yet — you can log in directly.</p>
+        <a href="/dashboard" class="btn-calculate">Login</a>
       {% else %}
         <form method="POST">
           <div class="input-group">
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username" required />
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" autocomplete="username" required />
           </div>
 
           <div class="input-group">
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required />
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" autocomplete="current-password" required />
           </div>
 
-          <button type="submit" class="btn-calculate">Login</button>
+          <button type="submit" class="btn-calculate">Enter</button>
         </form>
       {% endif %}
 

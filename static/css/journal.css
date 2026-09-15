@@ -348,3 +348,27 @@
   transform: none !important;
   box-shadow: none !important;
 }
+
+/* هماهنگ با پالت Welcome در حالت روشن */
+html.j-light .glass-box {
+  background: rgba(255, 255, 255, 0.46) !important;
+  border-color: rgba(16, 35, 63, 0.14) !important;
+  color: #1c1e21 !important;
+}
+
+html.j-light .glass-box label,
+html.j-light .j-empty,
+html.j-light .j-photo-hint,
+html.j-light .j-link {
+  color: #1c1e21;
+}
+
+html.j-light .glass-box input[type="text"],
+html.j-light .glass-box input[type="date"],
+html.j-light .glass-box input[type="file"],
+html.j-light .glass-box select,
+html.j-light .glass-box textarea {
+  background: rgba(255, 255, 255, 0.52);
+  border-color: rgba(16, 35, 63, 0.18);
+  color: #10233f;
+}

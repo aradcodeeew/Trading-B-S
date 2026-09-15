@@ -2,7 +2,8 @@
 به‌جاش بزن pip install -r requirements.txt
  python app.py
 
- pip install flask flaskwebgui werkzeug  
+ pip install flask flaskwebgui werkzeug  openpyxl 
+ pip install openpyxl 
  pip install flask flaskwebgui werkzeug; python app.py
 
 Trading-B-S/

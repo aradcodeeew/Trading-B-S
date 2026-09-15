@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="format-detection" content="telephone=no, address=no, email=no">
-  <title>آموزش</title>
+  <title>Learn</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
   <style>
     .learn-post {
@@ -129,7 +129,7 @@
         <input type="file" name="image" accept="image/*" onchange="previewImage(event)" style="display:none;" required>
       </label>
       <img id="img-preview" />
-      <textarea name="note" rows="3" placeholder="توضیح برای این آموزش..." style="width: 100%; margin-top: 8px;"></textarea>
+      <textarea name="note" rows="3" placeholder="Description for this lesson..." style="width: 100%; margin-top: 8px;"></textarea>
       <div class="form-btns">
         <button type="submit" class="save-btn">✔️</button>
         <button type="button" onclick="cancelPost()" class="cancel-btn">❌</button>
@@ -139,7 +139,7 @@
     {% for post in posts %}
       <div class="glass-box learn-post">
         <form method="POST" action="{{ url_for('delete_learn_post', index=loop.index0) }}">
-          <button class="delete-btn" title="حذف پست">🗑️</button>
+          <button class="delete-btn" title="Delete post">🗑️</button>
         </form>
         <img src="{{ url_for('learn_image', filename=post.image) }}">
         {% if post.text %}

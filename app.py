@@ -515,12 +515,13 @@ def export_zip():
             for fname in os.listdir(JOURNAL_STRATEGY_FIELDS_DIR):
                 zf.write(os.path.join(JOURNAL_STRATEGY_FIELDS_DIR, fname), arcname=os.path.join("journal_strategy_fields", fname))
 
-        learn_img_folder = os.path.join("static", "learn_images")
-        for root, dirs, files in os.walk(learn_img_folder):
-            for file in files:
-                full_path = os.path.join(root, file)
-                rel_path = os.path.relpath(full_path, "static")
-                zf.write(full_path, arcname=os.path.join("static", rel_path))
+        # عکس‌های Learn (توی LEARN_IMG_DIR هستن، نه مسیر نسبی static/)
+        if os.path.isdir(LEARN_IMG_DIR):
+            for root, dirs, files in os.walk(LEARN_IMG_DIR):
+                for file in files:
+                    full_path = os.path.join(root, file)
+                    rel_path = os.path.relpath(full_path, DATA_DIR)
+                    zf.write(full_path, arcname=rel_path.replace(os.sep, "/"))
 
         # عکس‌های آپلودشده‌ی ژورنال (journal_uploads/...)
         for root, dirs, files in os.walk(JOURNAL_UPLOAD_DIR):
@@ -541,12 +542,7 @@ def restore_notes():
 
     with zipfile.ZipFile(file) as zf:
         for member in zf.namelist():
-            if member.startswith("static/"):
-                # فایل‌های داخل static (عکس‌های آموزش، عکس‌های ژورنال) سر جای خودشون برگردن
-                target_path = os.path.join("static", member[len("static/"):])
-            else:
-                # بقیه فایل‌ها (json/txt) برن داخل DATA_DIR
-                target_path = os.path.join(DATA_DIR, member)
+            target_path = os.path.join(DATA_DIR, member)
             os.makedirs(os.path.dirname(target_path), exist_ok=True)
             with zf.open(member) as source, open(target_path, "wb") as target:
                 target.write(source.read())
