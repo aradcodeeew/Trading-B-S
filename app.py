@@ -897,3 +897,4 @@ def journal_uploaded_photo(account_id, filename):
 if __name__ == "__main__":
     ui = FlaskUI(app=app, server="flask", width=1000, height=900)
     ui.run()
+#arad azadbakht
