@@ -11,6 +11,7 @@ so you can use this in prop or broker accounts.
 *journals: manage all accont you have with any strategy you write parameter for your self for test back or journal them
 *backup for use it in android and windows devices (backup everything's you have inn app)
 
+
 this is local app you dont need internet.
 if this not work first time you open do it again
 
